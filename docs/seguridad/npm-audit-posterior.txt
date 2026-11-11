@@ -1,0 +1,38 @@
+npm audit - estado posterior a la corrección - 2026-11-11
+Herramienta: npm audit (npm 10.9.9), Node v22.23.4
+
+# npm audit report
+
+deepmerge  >=4.2.0
+deepmerge mergeObject() allows prototype poisoning of returned objects - https://github.com/advisories/GHSA-gcqx-w48m-w2h4
+fix available via `npm audit fix --force`
+Will install jest@25.1.0, which is a breaking change
+node_modules/deepmerge
+  jest-config  >=25.2.0-alpha.86
+  Depends on vulnerable versions of deepmerge
+  node_modules/jest-config
+    @jest/core  >=25.2.0-alpha.86
+    Depends on vulnerable versions of jest-config
+    node_modules/@jest/core
+      jest  >=25.2.0-alpha.86
+      Depends on vulnerable versions of @jest/core
+      Depends on vulnerable versions of jest-cli
+      node_modules/jest
+    create-jest  >=29.7.0
+    Depends on vulnerable versions of jest-config
+    node_modules/create-jest
+      jest-cli  >=25.2.0-alpha.86
+      Depends on vulnerable versions of @jest/core
+      Depends on vulnerable versions of create-jest
+      Depends on vulnerable versions of jest-config
+      node_modules/jest-cli
+
+6 low severity vulnerabilities
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Resultado de la compuerta (--audit-level=high): exit code 0
