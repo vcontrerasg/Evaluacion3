@@ -54,16 +54,27 @@ function createApp() {
   app.use('/api', notFound);
 
   const distPath = path.resolve(__dirname, '../../client/dist');
-  if (fs.existsSync(path.join(distPath, 'index.html'))) {
-    app.use(express.static(distPath, { index: false, maxAge: env.isProd ? '1h' : 0 }));
-    app.get(/^\/(?!api\/).*/, (req, res) => {
-      res.setHeader('Cache-Control', 'no-cache');
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
+    if (fs.existsSync(path.join(distPath, 'index.html'))) {
+      app.use(
+        express.static(distPath, {
+          index: false,
+          redirect: false,
+          maxAge: env.isProd ? '1h' : 0,
+          setHeaders: (res, filePath) => {
+            if (filePath.endsWith('.html')) {
+              res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+            }
+          }
+        })
+      );
+      app.get(/^\/(?!api\/).*/, (req, res) => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
 
-  app.use(errorHandler);
-  return app;
-}
+    app.use(errorHandler);
+    return app;
+  }
 
 module.exports = createApp;

@@ -1,0 +1,289 @@
+{
+	"@programName": "ZAP",
+	"@version": "2.17.0",
+	"@generated": "jue, 12 nov. 2026 20:18:41",
+	"created": "2026-11-12T23:18:41.300575Z",
+	"insights":[
+		{
+			"level": "Bajo",
+			"reason": "Advertencia",
+			"site": "",
+			"key": "insight.log.error",
+			"description": "ZAP errors logged - see the zap.log file for details",
+			"statistic": "1"
+		},
+		{
+			"level": "Bajo",
+			"reason": "Advertencia",
+			"site": "",
+			"key": "insight.log.warn",
+			"description": "ZAP warnings logged - see the zap.log file for details",
+			"statistic": "11"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.code.2xx",
+			"description": "Percentage of responses with status code 2xx",
+			"statistic": "66"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.code.3xx",
+			"description": "Percentage of responses with status code 3xx",
+			"statistic": "28"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.code.4xx",
+			"description": "Percentage of responses with status code 4xx",
+			"statistic": "5"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.endpoint.ctype.application/javascript",
+			"description": "Percentage of endpoints with content type application/javascript",
+			"statistic": "16"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.endpoint.ctype.text/css",
+			"description": "Percentage of endpoints with content type text/css",
+			"statistic": "16"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.endpoint.ctype.text/html",
+			"description": "Percentage of endpoints with content type text/html",
+			"statistic": "66"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.endpoint.method.GET",
+			"description": "Percentage of endpoints with method GET",
+			"statistic": "100"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.endpoint.total",
+			"description": "Count of total endpoints",
+			"statistic": "6"
+		},
+		{
+			"level": "Información",
+			"reason": "Informativo",
+			"site": "https://evaluacion3-production.up.railway.app",
+			"key": "insight.response.slow",
+			"description": "Percentage of slow responses",
+			"statistic": "100"
+		}
+	],
+	"site":[ 
+		{
+			"@name": "https://evaluacion3-production.up.railway.app",
+			"@host": "evaluacion3-production.up.railway.app",
+			"@port": "443",
+			"@ssl": "true",
+			"alerts": [ 
+				{
+					"pluginid": "10055",
+					"alertRef": "10055-13",
+					"alert": "CSP: Failure to Define Directive with No Fallback",
+					"name": "CSP: Failure to Define Directive with No Fallback",
+					"riskcode": "2",
+					"confidence": "3",
+					"riskdesc": "Medio (Alta)",
+					"desc": "<p>The Content Security Policy fails to define one of the directives that has no fallback. Missing/excluding them is the same as allowing anything.</p>",
+					"instances":[ 
+						{
+							"id": "11",
+							"uri": "https://evaluacion3-production.up.railway.app/assets",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/assets",
+							"method": "GET",
+							"param": "content-security-policy",
+							"attack": "",
+							"evidence": "default-src 'none'",
+							"otherinfo": "The directive(s): frame-ancestors, form-action is/are among the directives that do not fallback to default-src."
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>Aseg\u00FArese de que su servidor web, servidor de aplicaci\u00F3n, balanceador de carga, etc. est\u00E1 configurado apropiadamente para establecer la cabecera de Pol\u00EDtica de Seguridad de Contenido.</p>",
+					"otherinfo": "<p>The directive(s): frame-ancestors, form-action is/are among the directives that do not fallback to default-src.</p>",
+					"reference": "<p>https://www.w3.org/TR/CSP/</p><p>https://caniuse.com/#search=content+security+policy</p><p>https://content-security-policy.com/</p><p>https://github.com/HtmlUnit/htmlunit-csp</p><p>https://web.dev/articles/csp#resource-options</p>",
+					"cweid": "693",
+					"wascid": "15",
+					"sourceid": "43"
+				},
+				{
+					"pluginid": "10109",
+					"alertRef": "10109",
+					"alert": "Aplicaci\u00F3n Web Moderna",
+					"name": "Aplicaci\u00F3n Web Moderna",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informativo (Media)",
+					"desc": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Client Spider may well be more effective than the standard one.</p>",
+					"instances":[ 
+						{
+							"id": "7",
+							"uri": "https://evaluacion3-production.up.railway.app",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-5sgpxLDn.js\"></script>",
+							"otherinfo": "No se han encontrado enlaces aunque s\u00ED scripts, lo que indica que se trata de una aplicaci\u00F3n web moderna."
+						},
+						{
+							"id": "17",
+							"uri": "https://evaluacion3-production.up.railway.app/assets/",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/assets\/",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-5sgpxLDn.js\"></script>",
+							"otherinfo": "No se han encontrado enlaces aunque s\u00ED scripts, lo que indica que se trata de una aplicaci\u00F3n web moderna."
+						},
+						{
+							"id": "5",
+							"uri": "https://evaluacion3-production.up.railway.app/robots.txt",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/robots.txt",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-5sgpxLDn.js\"></script>",
+							"otherinfo": "No se han encontrado enlaces aunque s\u00ED scripts, lo que indica que se trata de una aplicaci\u00F3n web moderna."
+						},
+						{
+							"id": "4",
+							"uri": "https://evaluacion3-production.up.railway.app/sitemap.xml",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/sitemap.xml",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "<script type=\"module\" crossorigin src=\"/assets/index-5sgpxLDn.js\"></script>",
+							"otherinfo": "No se han encontrado enlaces aunque s\u00ED scripts, lo que indica que se trata de una aplicaci\u00F3n web moderna."
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>Se trata de una alerta informativa, por lo que no es necesario realizar ning\u00FAn cambio.</p>",
+					"otherinfo": "<p>No se han encontrado enlaces aunque s\u00ED scripts, lo que indica que se trata de una aplicaci\u00F3n web moderna.</p>",
+					"reference": "",
+					"cweid": "-1",
+					"wascid": "-1",
+					"sourceid": "1"
+				},
+				{
+					"pluginid": "10027",
+					"alertRef": "10027",
+					"alert": "Divulgaci\u00F3n de informaci\u00F3n - Comentarios sospechosos",
+					"name": "Divulgaci\u00F3n de informaci\u00F3n - Comentarios sospechosos",
+					"riskcode": "0",
+					"confidence": "2",
+					"riskdesc": "Informativo (Media)",
+					"desc": "<p>The response appears to contain suspicious comments which may help an attacker.</p>",
+					"instances":[ 
+						{
+							"id": "8",
+							"uri": "https://evaluacion3-production.up.railway.app/assets/index-5sgpxLDn.js",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/assets\/index-5sgpxLDn.js",
+							"method": "GET",
+							"param": "",
+							"attack": "",
+							"evidence": "nta`}),e&&e.role===`admin`&&(0,F.jsx)(N,{to:`",
+							"otherinfo": "The following pattern was used: \\bADMIN\\b and was detected in likely comment: \"//,``).split(`/`);p=`/`+f.replace(/^\\//,``).split(`/`).slice(e.length).join(`/`)}let m=n&&n.state.matches.length?n.state.matches\", see evidence field for the suspicious comment/snippet."
+						}
+					],
+					"count": "1",
+					"systemic": false,
+					"solution": "<p>Eliminar todos los comentarios que muestren informaci\u00F3n que pueda ayudar a un atacante y solucionar el problema al que se refieren.</p>",
+					"otherinfo": "<p>The following pattern was used: \\bADMIN\\b and was detected in likely comment: \"//,``).split(`/`);p=`/`+f.replace(/^\\//,``).split(`/`).slice(e.length).join(`/`)}let m=n&&n.state.matches.length?n.state.matches\", see evidence field for the suspicious comment/snippet.</p>",
+					"reference": "",
+					"cweid": "615",
+					"wascid": "13",
+					"sourceid": "13"
+				},
+				{
+					"pluginid": "10015",
+					"alertRef": "10015",
+					"alert": "Reexaminar las Directivas de Control de Cach\u00E9",
+					"name": "Reexaminar las Directivas de Control de Cach\u00E9",
+					"riskcode": "0",
+					"confidence": "1",
+					"riskdesc": "Informativo (Baja)",
+					"desc": "<p>La cabecera cache-control no se ha configurado correctamente o falta, lo que permite al navegador y a los proxies almacenar contenido en cach\u00E9. Para activos est\u00E1ticos como css, js, o archivos de imagen esto puede ser intencionado, sin embargo, los recursos deben ser revisados para asegurar que ning\u00FAn contenido sensible ser\u00E1 cacheado.</p>",
+					"instances":[ 
+						{
+							"id": "0",
+							"uri": "https://evaluacion3-production.up.railway.app",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app",
+							"method": "GET",
+							"param": "cache-control",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "14",
+							"uri": "https://evaluacion3-production.up.railway.app/assets/",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/assets\/",
+							"method": "GET",
+							"param": "cache-control",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "3",
+							"uri": "https://evaluacion3-production.up.railway.app/robots.txt",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/robots.txt",
+							"method": "GET",
+							"param": "cache-control",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						},
+						{
+							"id": "2",
+							"uri": "https://evaluacion3-production.up.railway.app/sitemap.xml",
+							"nodeName": "https:\/\/evaluacion3-production.up.railway.app\/sitemap.xml",
+							"method": "GET",
+							"param": "cache-control",
+							"attack": "",
+							"evidence": "no-cache",
+							"otherinfo": ""
+						}
+					],
+					"count": "4",
+					"systemic": false,
+					"solution": "<p>Para contenido seguro, aseg\u00FArese de que la cabecera HTTP cache-control est\u00E1 configurada con \u00ABno-cache, no-store, must-revalidate\u00BB. Si un activo debe almacenarse en cach\u00E9, considere establecer las directivas \u00ABpublic, max-age, immutable\u00BB.</p>",
+					"otherinfo": "",
+					"reference": "<p>https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#web-content-caching</p><p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control</p><p>https://grayduck.mn/2021/09/13/cache-control-recommendations/</p>",
+					"cweid": "525",
+					"wascid": "13",
+					"sourceid": "6"
+				}
+			]
+		}
+	],
+	"sequences":[
+	]
+
+}
