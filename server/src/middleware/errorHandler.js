@@ -23,8 +23,11 @@ function errorHandler(err, req, res, next) {
     return res.status(err.status || 400).json(body);
   }
 
-  if (!env.isTest) console.error(`[error] ${req.method} ${req.originalUrl} ${err.name}`);
-  return res.status(500).json({ error: { code: 'internal_error', message: 'Ocurrió un error inesperado. Intenta nuevamente' } });
+  if (!env.isTest) {
+    const safeUrl = String(req.originalUrl || '').replace(/[\r\n]+/g, ' ');
+    const safeName = String(err.name || 'Error').replace(/[\r\n]+/g, ' ');
+    console.error(`[error] ${req.method} ${safeUrl} ${safeName}`);
+  }
 }
 
 module.exports = { notFound, errorHandler };

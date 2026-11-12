@@ -13,9 +13,9 @@ function isEnabled() {
 
 function redact(text) {
   return String(text)
-    .replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, '[correo]')
+    .replace(/[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+/g, '[correo]')
     .replace(/\b\d{1,2}\.?\d{3}\.?\d{3}-?[\dkK]\b/g, '[dato]')
-    .replace(/\+?\d[\d\s().-]{6,}\d/g, '[dato]');
+    .replace(/\+?\d(?:[\s().-]*\d){7,}/g, '[dato]');
 }
 
 function buildMessages({ message, services, faqs }) {
