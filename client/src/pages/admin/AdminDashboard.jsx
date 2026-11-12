@@ -15,6 +15,8 @@ export default function AdminDashboard() {
           <div><dt>Administradores</dt><dd>{data.users.admins}</dd></div>
           <div><dt>Servicios activos</dt><dd>{data.services.active}</dd></div>
           <div><dt>Mensajes nuevos</dt><dd>{data.contactMessages.new}</dd></div>
+          <div><dt>Preguntas del chatbot</dt><dd>{data.chatbot.faqs}</dd></div>
+          <div><dt>Conversaciones (24 h)</dt><dd>{data.chatbot.conversations24h}</dd></div>
           <div><dt>Reservas pendientes</dt><dd>{data.reservations.pending}</dd></div>
           <div><dt>Reservas confirmadas</dt><dd>{data.reservations.confirmed}</dd></div>
           <div><dt>Reservas próximas</dt><dd>{data.reservations.upcoming}</dd></div>

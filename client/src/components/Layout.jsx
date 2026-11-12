@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../api/client.js';
 import { site } from '../config/site.js';
 import { networkLabels } from '../utils.js';
+import ChatWidget from './ChatWidget.jsx';
 
 function Mark() {
   return (
@@ -94,6 +95,7 @@ export default function Layout() {
           )}
         </div>
       </footer>
+      <ChatWidget />
     </>
   );
 }

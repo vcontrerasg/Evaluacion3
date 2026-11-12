@@ -16,8 +16,15 @@ const schema = z.object({
   MAIL_API_KEY: z.string().optional().default(''),
   MAIL_FROM_EMAIL: z.string().optional().default(''),
   MAIL_FROM_NAME: z.string().optional().default('Andes Consultores'),
-  CONTACT_TO: z.string().optional().default('')
+  CONTACT_TO: z.string().optional().default(''),
+  CHAT_AI_PROVIDER: z.enum(['none', 'groq']).default('none'),
+  CHAT_AI_API_KEY: z.string().optional().default(''),
+  CHAT_AI_MODEL: z.string().optional().default('llama-3.1-8b-instant'),
+  CHAT_AI_DAILY_LIMIT: z.coerce.number().int().min(0).max(100000).default(200)
 }).superRefine((v, ctx) => {
+  if (v.CHAT_AI_PROVIDER !== 'none' && !v.CHAT_AI_API_KEY) {
+    ctx.addIssue({ code: 'custom', path: ['CHAT_AI_API_KEY'], message: 'requerida' });
+  }
   if (v.MAIL_PROVIDER !== 'none') {
     if (!v.MAIL_API_KEY) ctx.addIssue({ code: 'custom', path: ['MAIL_API_KEY'], message: 'requerida' });
     if (!v.MAIL_FROM_EMAIL) ctx.addIssue({ code: 'custom', path: ['MAIL_FROM_EMAIL'], message: 'requerida' });

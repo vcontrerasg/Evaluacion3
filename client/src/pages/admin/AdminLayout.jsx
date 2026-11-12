@@ -11,6 +11,8 @@ export default function AdminLayout() {
         <NavLink to="/admin/mensajes">Mensajes</NavLink>
         <NavLink to="/admin/usuarios">Usuarios</NavLink>
         <NavLink to="/admin/redes">Redes sociales</NavLink>
+        <NavLink to="/admin/chatbot">Chatbot</NavLink>
+        <NavLink to="/admin/conversaciones">Conversaciones</NavLink>
       </nav>
       <Outlet />
     </section>

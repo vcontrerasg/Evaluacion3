@@ -18,4 +18,6 @@ const reservationLimiter = limiter(15, 30, 'Demasiadas reservas en poco tiempo. 
 
 const contactLimiter = limiter(60, 5, 'Enviaste varios mensajes en poco tiempo. Intenta nuevamente en una hora');
 
-module.exports = { apiLimiter, authLimiter, reservationLimiter, contactLimiter };
+const chatLimiter = limiter(10, 30, 'Estás enviando muchas preguntas. Espera unos minutos e inténtalo de nuevo');
+
+module.exports = { apiLimiter, authLimiter, reservationLimiter, contactLimiter, chatLimiter };

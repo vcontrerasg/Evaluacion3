@@ -25,6 +25,8 @@ export const statusLabels = {
   archived: 'Archivado'
 };
 
+export const sourceLabels = { faq: 'Preguntas frecuentes', ai: 'IA', fallback: 'Sin respuesta', greeting: 'Saludo' };
+
 export const reservationStatuses = ['pending', 'confirmed', 'cancelled'];
 
 export const mailLabels = { sent: 'Enviado', failed: 'Falló', skipped: 'No configurado', pending: 'Pendiente' };

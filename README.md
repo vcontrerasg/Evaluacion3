@@ -133,6 +133,24 @@ En producción, un único servicio Express expone la API bajo `/api` y sirve el 
 | mail.notification, mail.confirmation | String | Resultado del envío: `sent`, `failed`, `skipped` o `pending` |
 | ipHash | String | Huella parcial de la IP para detectar abuso. No se almacena la IP |
 
+**chatfaqs**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| question | String | 3 a 150 caracteres |
+| keywords | [String] | Hasta 15 palabras o frases de 2 a 30 caracteres |
+| answer | String | 5 a 800 caracteres |
+| active, order | Boolean, Number | Solo las activas responden. `order` desempata y ordena las sugerencias |
+
+**chatlogs**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| sessionId | String | Identificador aleatorio de la conversación |
+| message, reply | String | Pregunta (hasta 300 caracteres) y respuesta entregada |
+| source | String | `faq`, `ai`, `fallback` o `greeting` |
+| createdAt | Date | Índice TTL: MongoDB elimina el registro a los 30 días |
+
 **refreshtokens**
 
 | Campo | Tipo | Notas |
@@ -188,6 +206,10 @@ Las pruebas necesitan acceso a MongoDB. Por defecto usan `mongodb://127.0.0.1:27
 | MAIL_FROM_EMAIL | Si hay proveedor | Remitente. Debe estar verificado en el proveedor |
 | MAIL_FROM_NAME | No | Nombre del remitente. Por defecto `Andes Consultores` |
 | CONTACT_TO | No | Correo que recibe los mensajes. Por defecto `ADMIN_EMAIL` |
+| CHAT_AI_PROVIDER | No | `none` (por defecto) o `groq`. Activa la IA como respaldo del chatbot |
+| CHAT_AI_API_KEY | Si hay proveedor | Clave de API del proveedor de IA |
+| CHAT_AI_MODEL | No | Modelo a usar. Por defecto `llama-3.1-8b-instant`. Revisar los modelos vigentes en el panel del proveedor |
+| CHAT_AI_DAILY_LIMIT | No | Máximo de respuestas de IA por 24 horas. Por defecto 200. Protege la cuota gratuita |
 | SEED_DEMO_DATA | No | Con `true`, y solo si las colecciones están vacías, carga servicios y enlaces de ejemplo. Por defecto `false` |
 
 Ningún valor secreto se versiona. El archivo `.env` está excluido en `.gitignore`.
@@ -201,6 +223,27 @@ Ningún valor secreto se versiona. El archivo `.env` está excluido en `.gitigno
 - Un usuario solo puede ver y cancelar sus propias reservas. El administrador puede gestionar todas.
 - Un servicio con reservas asociadas no se elimina: se desactiva.
 - Los usuarios no se eliminan: se desactivan, lo que conserva la trazabilidad y revoca sus sesiones.
+
+## Chatbot
+
+El asistente aparece como un botón flotante en todas las páginas. Responde en tres niveles:
+
+1. **Saludos:** respuesta fija.
+2. **Preguntas frecuentes administrables:** el administrador crea preguntas con palabras clave y respuesta desde el panel (Chatbot). El texto del usuario se normaliza (sin tildes, mayúsculas ni signos) y se compara con las palabras clave mediante una raíz simple por prefijo, de modo que `reservar`, `reservo` y `reserva` coinciden. Las palabras con la misma raíz cuentan una sola vez. Gana la pregunta con mayor puntaje y, si ninguna alcanza el mínimo, se pasa al siguiente nivel.
+3. **IA opcional (Groq):** solo si no hubo coincidencia, hay clave configurada y no se superó el límite diario. El modelo recibe únicamente el contexto de la organización (horario, servicios y preguntas frecuentes) y la pregunta del usuario en un mensaje separado de las instrucciones. Antes de enviarla se ocultan correos, teléfonos y RUT. La respuesta se limita a 600 caracteres y se identifica en pantalla como generada con IA.
+4. **Sin respuesta:** si la IA no está activa o falla, el asistente lo indica, sugiere el formulario de contacto y ofrece preguntas frecuentes.
+
+Todas las conversaciones se registran (pregunta, respuesta y origen) y el administrador puede revisarlas en el panel para detectar preguntas sin respuesta. Se eliminan automáticamente a los 30 días.
+
+Limitación conocida: la búsqueda es por palabras clave, no por significado. Una pregunta que comparta palabras con otra respuesta (por ejemplo, "cuánto demora la reserva") puede recibir la respuesta de la pregunta más cercana. Se corrige agregando preguntas específicas.
+
+Configuración de la IA con Groq:
+
+1. Crear una cuenta en console.groq.com y una clave de API.
+2. Definir en Railway: `CHAT_AI_PROVIDER=groq` y `CHAT_AI_API_KEY`. Opcionalmente `CHAT_AI_MODEL` y `CHAT_AI_DAILY_LIMIT`.
+3. La clave nunca se escribe en el repositorio ni se envía al navegador: las llamadas a la IA se hacen solo desde el servidor.
+
+Sin esta configuración el chatbot funciona completo con las preguntas frecuentes.
 
 ## Formulario de contacto y correo
 
@@ -233,6 +276,8 @@ Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 | POST | /api/auth/refresh | Rota el refresh token (cookie) y entrega un nuevo access token |
 | POST | /api/auth/logout | Revoca el refresh token |
 | POST | /api/contact | Envía un mensaje de contacto |
+| GET | /api/chat/suggestions | Preguntas sugeridas del chatbot |
+| POST | /api/chat | Envía una pregunta al chatbot |
 
 **Usuario autenticado**
 
@@ -256,6 +301,10 @@ Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 | PATCH | /api/admin/users/:id | Cambia el rol o el estado de un usuario |
 | GET | /api/admin/contact-messages | Lista paginada, con filtro por estado |
 | PATCH, DELETE | /api/admin/contact-messages/:id | Cambia el estado o elimina un mensaje |
+| GET, POST | /api/admin/chat-faqs | Lista y crea preguntas del chatbot |
+| PATCH, DELETE | /api/admin/chat-faqs/:id | Edita y elimina una pregunta |
+| GET | /api/admin/chat-logs | Conversaciones paginadas, con filtro por origen |
+| DELETE | /api/admin/chat-logs/:id | Elimina una conversación |
 | GET, POST | /api/admin/social-links | Lista y crea enlaces |
 | PATCH, DELETE | /api/admin/social-links/:id | Edita y elimina un enlace |
 
@@ -285,6 +334,9 @@ Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 - Formulario de contacto con campo trampa, tiempo mínimo de llenado y límites por IP y por correo.
 - Los correos escapan el HTML de los datos ingresados y la confirmación al cliente no incluye el texto del mensaje, para que el formulario no sirva como vía de envío de contenido a terceros.
 - La clave del proveedor de correo vive solo en variables de entorno y los errores de envío no la registran.
+- Chatbot: la pregunta del usuario viaja como mensaje de rol `user`, separada de las instrucciones del sistema, que indican no seguir órdenes contenidas en el mensaje. Se ocultan datos personales antes de enviarla a la IA y la respuesta se limita en longitud. Las respuestas se muestran como texto, nunca como HTML.
+- La IA tiene un tope diario de uso, límite de solicitudes por IP, tiempo máximo de espera y `max_tokens` acotado. Las claves de la IA solo se usan en el servidor.
+- Las conversaciones del chatbot se eliminan a los 30 días y el panel muestra solo los primeros 8 caracteres del identificador de sesión.
 
 ## Integración continua
 

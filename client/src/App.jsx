@@ -13,6 +13,8 @@ import AdminServices from './pages/admin/AdminServices.jsx';
 import AdminReservations from './pages/admin/AdminReservations.jsx';
 import AdminUsers from './pages/admin/AdminUsers.jsx';
 import AdminMessages from './pages/admin/AdminMessages.jsx';
+import AdminChatbot from './pages/admin/AdminChatbot.jsx';
+import AdminChatLogs from './pages/admin/AdminChatLogs.jsx';
 import AdminSocial from './pages/admin/AdminSocial.jsx';
 import NotFound from './pages/NotFound.jsx';
 
@@ -36,6 +38,8 @@ export default function App() {
             <Route path="mensajes" element={<AdminMessages />} />
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="redes" element={<AdminSocial />} />
+            <Route path="chatbot" element={<AdminChatbot />} />
+            <Route path="conversaciones" element={<AdminChatLogs />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
