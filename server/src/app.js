@@ -45,6 +45,11 @@ function createApp() {
 
   app.use(express.json({ limit: '10kb' }));
   app.use(cookieParser());
+  app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+  });
   app.use('/api', apiLimiter, noSqlGuard, routes);
   app.use('/api', notFound);
 
