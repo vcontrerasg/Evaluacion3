@@ -1,11 +1,12 @@
 const env = require('./config/env');
 const { connectDB } = require('./config/db');
-const { ensureAdmin } = require('./services/bootstrap.service');
+const { ensureAdmin, seedDemoData } = require('./services/bootstrap.service');
 const createApp = require('./app');
 
 async function main() {
   await connectDB();
   await ensureAdmin();
+  await seedDemoData();
   const app = createApp();
   app.listen(env.PORT, () => console.log(`Servidor escuchando en el puerto ${env.PORT}`));
 }

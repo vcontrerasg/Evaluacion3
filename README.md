@@ -91,6 +91,39 @@ En producción, un único servicio Express expone la API bajo `/api` y sirve el 
 | lastLoginAt | Date | |
 | createdAt, updatedAt | Date | Automáticos |
 
+**services**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| name | String | 3 a 80 caracteres. Único |
+| description | String | 10 a 500 caracteres |
+| durationMinutes | Number | Entero entre 15 y 240 |
+| price | Number | Entero en CLP, entre 0 y 10.000.000 |
+| active | Boolean | Solo los servicios activos son públicos y reservables |
+
+**reservations**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| user | ObjectId | Referencia a `users` |
+| service | ObjectId | Referencia a `services` |
+| startsAt | Date | Inicio de la reserva, en UTC |
+| status | String | `pending`, `confirmed` o `cancelled` |
+| notes | String | Hasta 300 caracteres |
+| blocksSlot | Boolean | `false` cuando la reserva está cancelada. Libera el horario |
+
+Índice único parcial sobre `service` y `startsAt` cuando `blocksSlot` es verdadero: la base de datos impide que dos solicitudes simultáneas reserven el mismo horario.
+
+**sociallinks**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| network | String | `instagram`, `facebook`, `linkedin`, `tiktok` o `whatsapp`. Único |
+| url | String | Solo https y solo dominios de la red indicada |
+| label | String | Texto opcional del enlace |
+| order | Number | Orden de aparición, de 0 a 99 |
+| active | Boolean | Solo los activos aparecen en el sitio |
+
 **refreshtokens**
 
 | Campo | Tipo | Notas |
@@ -141,24 +174,61 @@ Las pruebas necesitan acceso a MongoDB. Por defecto usan `mongodb://127.0.0.1:27
 | REFRESH_TTL_DAYS | No | Duración del refresh token en días. Por defecto 7 |
 | CLIENT_ORIGIN | No | Orígenes permitidos por CORS, separados por coma. Vacío si el frontend se sirve desde el mismo origen |
 | ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD | No | Si se definen y la cuenta no existe, se crea el administrador inicial al arrancar |
+| SEED_DEMO_DATA | No | Con `true`, y solo si las colecciones están vacías, carga servicios y enlaces de ejemplo. Por defecto `false` |
 
 Ningún valor secreto se versiona. El archivo `.env` está excluido en `.gitignore`.
 
-## API
+## Reglas de negocio de las reservas
 
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| GET | /api/health | Público | Estado del servicio y de la base de datos |
-| POST | /api/auth/register | Público | Crea una cuenta con rol `user` |
-| POST | /api/auth/login | Público | Inicia sesión y entrega un access token |
-| POST | /api/auth/refresh | Cookie | Rota el refresh token y entrega un nuevo access token |
-| POST | /api/auth/logout | Cookie | Revoca el refresh token |
-| GET | /api/auth/me | Usuario | Perfil de la cuenta autenticada |
-| GET | /api/admin/summary | Administrador | Resumen de usuarios |
+- Atención de lunes a viernes, de 09:00 a 18:00 (zona horaria America/Santiago), en bloques de 30 minutos.
+- Solo se reservan horas futuras, con un máximo de 90 días de anticipación.
+- Un horario ocupado no puede reservarse de nuevo. Si la reserva se cancela, el horario queda libre.
+- Cada usuario puede tener como máximo 5 reservas activas futuras.
+- Un usuario solo puede ver y cancelar sus propias reservas. El administrador puede gestionar todas.
+- Un servicio con reservas asociadas no se elimina: se desactiva.
+- Los usuarios no se eliminan: se desactivan, lo que conserva la trazabilidad y revoca sus sesiones.
+
+## API
 
 Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 
-Respuestas de error: `401` token ausente, inválido o expirado; `403` rol insuficiente; `400` datos inválidos; `409` correo duplicado; `423` cuenta bloqueada temporalmente; `429` límite de solicitudes superado.
+**Públicas**
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | /api/health | Estado del servicio y de la base de datos |
+| GET | /api/services | Servicios activos |
+| GET | /api/services/:id/availability?date=AAAA-MM-DD | Horarios del día y su disponibilidad |
+| GET | /api/social-links | Enlaces de redes sociales activos |
+| POST | /api/auth/register | Crea una cuenta con rol `user` |
+| POST | /api/auth/login | Inicia sesión y entrega un access token |
+| POST | /api/auth/refresh | Rota el refresh token (cookie) y entrega un nuevo access token |
+| POST | /api/auth/logout | Revoca el refresh token |
+
+**Usuario autenticado**
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | /api/auth/me | Perfil de la cuenta |
+| POST | /api/reservations | Crea una reserva |
+| GET | /api/reservations/mine | Reservas propias |
+| PATCH | /api/reservations/:id/cancel | Cancela una reserva propia |
+
+**Administrador**
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | /api/admin/summary | Métricas generales |
+| GET, POST | /api/admin/services | Lista y crea servicios |
+| PATCH, DELETE | /api/admin/services/:id | Edita y elimina un servicio |
+| GET | /api/admin/reservations | Lista paginada, con filtro por estado |
+| PATCH, DELETE | /api/admin/reservations/:id | Cambia el estado o elimina una reserva |
+| GET, POST | /api/admin/users | Lista paginada con búsqueda y filtro por perfil. Crea usuarios con rol |
+| PATCH | /api/admin/users/:id | Cambia el rol o el estado de un usuario |
+| GET, POST | /api/admin/social-links | Lista y crea enlaces |
+| PATCH, DELETE | /api/admin/social-links/:id | Edita y elimina un enlace |
+
+**Códigos de error:** `400` datos inválidos; `401` token ausente, inválido o expirado; `403` rol insuficiente o recurso ajeno; `404` recurso inexistente; `409` conflicto (correo duplicado, horario ocupado, servicio con reservas); `423` cuenta bloqueada temporalmente; `429` límite de solicitudes superado.
 
 ## Seguridad implementada
 
@@ -175,6 +245,12 @@ Respuestas de error: `401` token ausente, inválido o expirado; `403` rol insufi
 - Cabeceras de seguridad con Helmet y política de contenido restrictiva (`script-src 'self'`).
 - Errores controlados. En producción no se exponen trazas ni detalles internos.
 - Cuerpo de las solicitudes limitado a 10 kB.
+- Control de propiedad: cada reserva solo puede consultarse o cancelarse por quien la creó o por un administrador. La respuesta ante un recurso ajeno es 403 sin revelar datos.
+- Integridad de reservas garantizada en la base de datos mediante un índice único parcial, de modo que las solicitudes concurrentes no generan duplicados.
+- Reglas de horario validadas en el servidor, sin depender del navegador.
+- Enlaces de redes sociales restringidos a https y al dominio de la red declarada, sin credenciales embebidas. Se abren con `rel="noopener noreferrer"`.
+- Un administrador no puede modificar su propio rol ni estado. Al cambiar el rol o desactivar una cuenta se revocan sus refresh tokens.
+- Búsquedas de usuarios con caracteres especiales escapados, para evitar expresiones regulares inyectadas.
 
 ## Integración continua
 

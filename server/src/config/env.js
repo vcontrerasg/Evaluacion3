@@ -10,7 +10,8 @@ const schema = z.object({
   CLIENT_ORIGIN: z.string().optional().default(''),
   ADMIN_NAME: z.string().optional().default('Administrador'),
   ADMIN_EMAIL: z.string().optional().default(''),
-  ADMIN_PASSWORD: z.string().optional().default('')
+  ADMIN_PASSWORD: z.string().optional().default(''),
+  SEED_DEMO_DATA: z.enum(['true', 'false']).default('false')
 });
 
 const parsed = schema.safeParse(process.env);

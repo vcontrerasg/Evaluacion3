@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { api } from '../api/client.js';
 import { site } from '../config/site.js';
+import { networkLabels } from '../utils.js';
 
 function Mark() {
   return (
@@ -16,6 +18,13 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [links, setLinks] = useState([]);
+
+  useEffect(() => {
+    api('/social-links', { auth: false })
+      .then((data) => setLinks(data.links.filter((l) => typeof l.url === 'string' && l.url.startsWith('https://'))))
+      .catch(() => setLinks([]));
+  }, []);
 
   const close = () => setOpen(false);
 
@@ -45,6 +54,7 @@ export default function Layout() {
           </button>
           <nav id="menu-principal" className={open ? 'nav open' : 'nav'} aria-label="Principal">
             <NavLink to="/" end onClick={close}>Inicio</NavLink>
+            {user && <NavLink to="/reservar" onClick={close}>Reservar</NavLink>}
             {user && <NavLink to="/cuenta" onClick={close}>Mi cuenta</NavLink>}
             {user && user.role === 'admin' && <NavLink to="/admin" onClick={close}>Panel</NavLink>}
             {!user && <NavLink to="/ingresar" onClick={close}>Ingresar</NavLink>}
@@ -61,10 +71,26 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="site-footer">
-        <div className="bar">
-          <p>{site.name}</p>
-          <p>{site.city}</p>
-          <p>{site.email}</p>
+        <div className="bar footer-grid">
+          <div>
+            <p className="footer-name">{site.name}</p>
+            <p>{site.city}</p>
+            <p>{site.email}</p>
+          </div>
+          {links.length > 0 && (
+            <nav aria-label="Redes sociales">
+              <ul className="social-list">
+                {links.map((l) => (
+                  <li key={l.id}>
+                    <a href={l.url} target="_blank" rel="noopener noreferrer">
+                      {l.label || networkLabels[l.network] || l.network}
+                      <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </div>
       </footer>
     </>

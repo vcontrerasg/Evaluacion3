@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import useLoad from '../hooks/useLoad.js';
+import { api } from '../api/client.js';
 import { site } from '../config/site.js';
+import { money } from '../utils.js';
 
 function Ridges() {
   return (
@@ -20,6 +23,8 @@ const steps = [
 
 export default function Home() {
   const { user } = useAuth();
+  const { data, error, loading } = useLoad(() => api('/services', { auth: false }), []);
+  const services = data ? data.services : [];
 
   return (
     <>
@@ -32,7 +37,7 @@ export default function Home() {
           </p>
           <div className="actions">
             {user ? (
-              <Link to="/cuenta" className="btn btn-signal">Ir a mi cuenta</Link>
+              <Link to="/reservar" className="btn btn-signal">Reservar una hora</Link>
             ) : (
               <>
                 <Link to="/registro" className="btn btn-signal">Crear cuenta</Link>
@@ -44,7 +49,31 @@ export default function Home() {
         <Ridges />
       </section>
 
-      <section className="page">
+      <section className="page" aria-labelledby="servicios-titulo">
+        <h2 id="servicios-titulo">Servicios</h2>
+        {loading && <p className="status-inline">Cargando servicios</p>}
+        {error && <p className="form-error" role="alert">{error}</p>}
+        {!loading && !error && services.length === 0 && <p>Por ahora no hay servicios publicados.</p>}
+        {services.length > 0 && (
+          <ul className="service-list">
+            {services.map((s) => (
+              <li key={s.id}>
+                <div className="service-main">
+                  <h3>{s.name}</h3>
+                  <p>{s.description}</p>
+                </div>
+                <dl className="service-meta">
+                  <div><dt>Duración</dt><dd>{s.durationMinutes} min</dd></div>
+                  <div><dt>Valor</dt><dd>{money(s.price)}</dd></div>
+                </dl>
+                <Link to={`/reservar?servicio=${s.id}`} className="btn btn-primary">Reservar</Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="page tint">
         <h2>Cómo reservar</h2>
         <ol className="steps">
           {steps.map((s) => (
@@ -56,7 +85,7 @@ export default function Home() {
         </ol>
       </section>
 
-      <section className="page tint">
+      <section className="page">
         <h2>Tus datos, cuidados</h2>
         <p className="measure">
           Las contraseñas se guardan protegidas con bcrypt y nunca se muestran. Cada sesión caduca

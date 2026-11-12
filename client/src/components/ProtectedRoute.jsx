@@ -6,7 +6,7 @@ export default function ProtectedRoute({ roles }) {
   const location = useLocation();
 
   if (loading) return <p className="status-line">Verificando sesión</p>;
-  if (!user) return <Navigate to="/ingresar" replace state={{ from: location.pathname }} />;
+  if (!user) return <Navigate to="/ingresar" replace state={{ from: location.pathname + location.search }} />;
   if (roles && !roles.includes(user.role)) {
     return (
       <section className="page narrow">

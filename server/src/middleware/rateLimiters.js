@@ -14,4 +14,6 @@ function limiter(windowMinutes, max, message) {
 const apiLimiter = limiter(15, 300, 'Demasiadas solicitudes. Intenta nuevamente en unos minutos');
 const authLimiter = limiter(15, 20, 'Demasiados intentos de acceso. Intenta nuevamente en unos minutos');
 
-module.exports = { apiLimiter, authLimiter };
+const reservationLimiter = limiter(15, 30, 'Demasiadas reservas en poco tiempo. Intenta nuevamente en unos minutos');
+
+module.exports = { apiLimiter, authLimiter, reservationLimiter };
