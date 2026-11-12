@@ -55,6 +55,7 @@ export default function Layout() {
           <nav id="menu-principal" className={open ? 'nav open' : 'nav'} aria-label="Principal">
             <NavLink to="/" end onClick={close}>Inicio</NavLink>
             {user && <NavLink to="/reservar" onClick={close}>Reservar</NavLink>}
+            <NavLink to="/contacto" onClick={close}>Contacto</NavLink>
             {user && <NavLink to="/cuenta" onClick={close}>Mi cuenta</NavLink>}
             {user && user.role === 'admin' && <NavLink to="/admin" onClick={close}>Panel</NavLink>}
             {!user && <NavLink to="/ingresar" onClick={close}>Ingresar</NavLink>}

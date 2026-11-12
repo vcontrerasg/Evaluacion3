@@ -16,7 +16,18 @@ export function timeOnly(iso) {
   return timeFormat.format(new Date(iso));
 }
 
-export const statusLabels = { pending: 'Pendiente', confirmed: 'Confirmada', cancelled: 'Cancelada' };
+export const statusLabels = {
+  pending: 'Pendiente',
+  confirmed: 'Confirmada',
+  cancelled: 'Cancelada',
+  new: 'Nuevo',
+  read: 'Leído',
+  archived: 'Archivado'
+};
+
+export const reservationStatuses = ['pending', 'confirmed', 'cancelled'];
+
+export const mailLabels = { sent: 'Enviado', failed: 'Falló', skipped: 'No configurado', pending: 'Pendiente' };
 
 export const networkLabels = {
   instagram: 'Instagram',
@@ -29,6 +40,10 @@ export const networkLabels = {
 export function describeError(err) {
   if (err && err.fields && Object.keys(err.fields).length > 0) return Object.values(err.fields).join(' ');
   return (err && err.message) || 'No se pudo completar la solicitud';
+}
+
+export function dateShort(iso) {
+  return new Intl.DateTimeFormat('es-CL', { timeZone: TZ, day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
 }
 
 export function isoDate(date) {

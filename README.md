@@ -124,6 +124,15 @@ En producción, un único servicio Express expone la API bajo `/api` y sirve el 
 | order | Number | Orden de aparición, de 0 a 99 |
 | active | Boolean | Solo los activos aparecen en el sitio |
 
+**contactmessages**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| name, email, phone, subject, message | String | Validados en el servidor. El mensaje admite hasta 1000 caracteres |
+| status | String | `new`, `read` o `archived` |
+| mail.notification, mail.confirmation | String | Resultado del envío: `sent`, `failed`, `skipped` o `pending` |
+| ipHash | String | Huella parcial de la IP para detectar abuso. No se almacena la IP |
+
 **refreshtokens**
 
 | Campo | Tipo | Notas |
@@ -174,6 +183,11 @@ Las pruebas necesitan acceso a MongoDB. Por defecto usan `mongodb://127.0.0.1:27
 | REFRESH_TTL_DAYS | No | Duración del refresh token en días. Por defecto 7 |
 | CLIENT_ORIGIN | No | Orígenes permitidos por CORS, separados por coma. Vacío si el frontend se sirve desde el mismo origen |
 | ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD | No | Si se definen y la cuenta no existe, se crea el administrador inicial al arrancar |
+| MAIL_PROVIDER | No | `none` (por defecto), `brevo` o `resend`. Con `none` los mensajes se guardan pero no se envían correos |
+| MAIL_API_KEY | Si hay proveedor | Clave de API del proveedor de correo |
+| MAIL_FROM_EMAIL | Si hay proveedor | Remitente. Debe estar verificado en el proveedor |
+| MAIL_FROM_NAME | No | Nombre del remitente. Por defecto `Andes Consultores` |
+| CONTACT_TO | No | Correo que recibe los mensajes. Por defecto `ADMIN_EMAIL` |
 | SEED_DEMO_DATA | No | Con `true`, y solo si las colecciones están vacías, carga servicios y enlaces de ejemplo. Por defecto `false` |
 
 Ningún valor secreto se versiona. El archivo `.env` está excluido en `.gitignore`.
@@ -187,6 +201,20 @@ Ningún valor secreto se versiona. El archivo `.env` está excluido en `.gitigno
 - Un usuario solo puede ver y cancelar sus propias reservas. El administrador puede gestionar todas.
 - Un servicio con reservas asociadas no se elimina: se desactiva.
 - Los usuarios no se eliminan: se desactivan, lo que conserva la trazabilidad y revoca sus sesiones.
+
+## Formulario de contacto y correo
+
+Al enviar el formulario, el mensaje se guarda en MongoDB y se envían dos correos: una notificación a la organización (con `Reply-To` al cliente) y una confirmación al cliente que no repite el contenido del mensaje. Si el envío falla, el mensaje queda guardado y el administrador ve el estado del envío en la bandeja.
+
+El envío usa la API HTTPS del proveedor (Brevo o Resend) y no SMTP. Railway bloquea las conexiones SMTP salientes en los planes Free, Trial y Hobby, por lo que un envío por SMTP no funcionaría al desplegar.
+
+Configuración con Brevo:
+
+1. Crear una cuenta en Brevo y verificar el correo remitente en *Senders*.
+2. Crear una clave en *SMTP y API > Claves API*.
+3. Definir en Railway: `MAIL_PROVIDER=brevo`, `MAIL_API_KEY`, `MAIL_FROM_EMAIL` (el remitente verificado) y `CONTACT_TO`.
+
+Protecciones antispam del formulario: campo trampa invisible para personas, tiempo mínimo de llenado de 2 segundos, máximo de 5 envíos por hora por IP, máximo de 3 mensajes por correo cada 24 horas, validación estricta y rechazo de saltos de línea en nombre y asunto.
 
 ## API
 
@@ -204,6 +232,7 @@ Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 | POST | /api/auth/login | Inicia sesión y entrega un access token |
 | POST | /api/auth/refresh | Rota el refresh token (cookie) y entrega un nuevo access token |
 | POST | /api/auth/logout | Revoca el refresh token |
+| POST | /api/contact | Envía un mensaje de contacto |
 
 **Usuario autenticado**
 
@@ -225,6 +254,8 @@ Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 | PATCH, DELETE | /api/admin/reservations/:id | Cambia el estado o elimina una reserva |
 | GET, POST | /api/admin/users | Lista paginada con búsqueda y filtro por perfil. Crea usuarios con rol |
 | PATCH | /api/admin/users/:id | Cambia el rol o el estado de un usuario |
+| GET | /api/admin/contact-messages | Lista paginada, con filtro por estado |
+| PATCH, DELETE | /api/admin/contact-messages/:id | Cambia el estado o elimina un mensaje |
 | GET, POST | /api/admin/social-links | Lista y crea enlaces |
 | PATCH, DELETE | /api/admin/social-links/:id | Edita y elimina un enlace |
 
@@ -251,6 +282,9 @@ Las rutas privadas esperan el encabezado `Authorization: Bearer <accessToken>`.
 - Enlaces de redes sociales restringidos a https y al dominio de la red declarada, sin credenciales embebidas. Se abren con `rel="noopener noreferrer"`.
 - Un administrador no puede modificar su propio rol ni estado. Al cambiar el rol o desactivar una cuenta se revocan sus refresh tokens.
 - Búsquedas de usuarios con caracteres especiales escapados, para evitar expresiones regulares inyectadas.
+- Formulario de contacto con campo trampa, tiempo mínimo de llenado y límites por IP y por correo.
+- Los correos escapan el HTML de los datos ingresados y la confirmación al cliente no incluye el texto del mensaje, para que el formulario no sirva como vía de envío de contenido a terceros.
+- La clave del proveedor de correo vive solo en variables de entorno y los errores de envío no la registran.
 
 ## Integración continua
 

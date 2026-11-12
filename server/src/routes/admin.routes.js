@@ -4,6 +4,7 @@ const services = require('../controllers/service.controller');
 const reservations = require('../controllers/reservation.controller');
 const users = require('../controllers/user.controller');
 const social = require('../controllers/social.controller');
+const contact = require('../controllers/contact.controller');
 const validate = require('../middleware/validate');
 const validateObjectId = require('../middleware/validateObjectId');
 const { authenticate, authorize } = require('../middleware/auth');
@@ -11,6 +12,7 @@ const { createServiceSchema, updateServiceSchema } = require('../validators/serv
 const { adminReservationQuery, adminReservationUpdateSchema } = require('../validators/reservation.validators');
 const { adminUserQuery, adminCreateUserSchema, adminUpdateUserSchema } = require('../validators/user.validators');
 const { createSocialSchema, updateSocialSchema } = require('../validators/social.validators');
+const { adminContactQuery, adminContactUpdateSchema } = require('../validators/contact.validators');
 
 const router = Router();
 
@@ -35,5 +37,9 @@ router.get('/social-links', social.adminList);
 router.post('/social-links', validate(createSocialSchema), social.adminCreate);
 router.patch('/social-links/:id', validateObjectId('id'), validate(updateSocialSchema), social.adminUpdate);
 router.delete('/social-links/:id', validateObjectId('id'), social.adminRemove);
+
+router.get('/contact-messages', validate(adminContactQuery, 'query'), contact.adminList);
+router.patch('/contact-messages/:id', validateObjectId('id'), validate(adminContactUpdateSchema), contact.adminUpdate);
+router.delete('/contact-messages/:id', validateObjectId('id'), contact.adminRemove);
 
 module.exports = router;

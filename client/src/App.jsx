@@ -6,11 +6,13 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Profile from './pages/Profile.jsx';
 import Booking from './pages/Booking.jsx';
+import Contact from './pages/Contact.jsx';
 import AdminLayout from './pages/admin/AdminLayout.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import AdminServices from './pages/admin/AdminServices.jsx';
 import AdminReservations from './pages/admin/AdminReservations.jsx';
 import AdminUsers from './pages/admin/AdminUsers.jsx';
+import AdminMessages from './pages/admin/AdminMessages.jsx';
 import AdminSocial from './pages/admin/AdminSocial.jsx';
 import NotFound from './pages/NotFound.jsx';
 
@@ -21,6 +23,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="ingresar" element={<Login />} />
         <Route path="registro" element={<Register />} />
+        <Route path="contacto" element={<Contact />} />
         <Route element={<ProtectedRoute />}>
           <Route path="cuenta" element={<Profile />} />
           <Route path="reservar" element={<Booking />} />
@@ -30,6 +33,7 @@ export default function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="servicios" element={<AdminServices />} />
             <Route path="reservas" element={<AdminReservations />} />
+            <Route path="mensajes" element={<AdminMessages />} />
             <Route path="usuarios" element={<AdminUsers />} />
             <Route path="redes" element={<AdminSocial />} />
           </Route>

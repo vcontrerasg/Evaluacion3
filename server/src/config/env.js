@@ -11,7 +11,18 @@ const schema = z.object({
   ADMIN_NAME: z.string().optional().default('Administrador'),
   ADMIN_EMAIL: z.string().optional().default(''),
   ADMIN_PASSWORD: z.string().optional().default(''),
-  SEED_DEMO_DATA: z.enum(['true', 'false']).default('false')
+  SEED_DEMO_DATA: z.enum(['true', 'false']).default('false'),
+  MAIL_PROVIDER: z.enum(['none', 'brevo', 'resend']).default('none'),
+  MAIL_API_KEY: z.string().optional().default(''),
+  MAIL_FROM_EMAIL: z.string().optional().default(''),
+  MAIL_FROM_NAME: z.string().optional().default('Andes Consultores'),
+  CONTACT_TO: z.string().optional().default('')
+}).superRefine((v, ctx) => {
+  if (v.MAIL_PROVIDER !== 'none') {
+    if (!v.MAIL_API_KEY) ctx.addIssue({ code: 'custom', path: ['MAIL_API_KEY'], message: 'requerida' });
+    if (!v.MAIL_FROM_EMAIL) ctx.addIssue({ code: 'custom', path: ['MAIL_FROM_EMAIL'], message: 'requerida' });
+    if (!v.CONTACT_TO && !v.ADMIN_EMAIL) ctx.addIssue({ code: 'custom', path: ['CONTACT_TO'], message: 'requerida' });
+  }
 });
 
 const parsed = schema.safeParse(process.env);
@@ -28,5 +39,6 @@ module.exports = {
   ...env,
   isProd: env.NODE_ENV === 'production',
   isTest: env.NODE_ENV === 'test',
+  contactTo: env.CONTACT_TO || env.ADMIN_EMAIL,
   allowedOrigins: env.CLIENT_ORIGIN ? env.CLIENT_ORIGIN.split(',').map((s) => s.trim()) : []
 };

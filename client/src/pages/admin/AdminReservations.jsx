@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api } from '../../api/client.js';
 import useLoad from '../../hooks/useLoad.js';
 import StatusBadge from '../../components/StatusBadge.jsx';
-import { dateTime, describeError, statusLabels } from '../../utils.js';
+import { dateTime, describeError, reservationStatuses, statusLabels } from '../../utils.js';
 
 export default function AdminReservations() {
   const [status, setStatus] = useState('');
@@ -46,8 +46,8 @@ export default function AdminReservations() {
           <label htmlFor="f-status">Estado</label>
           <select id="f-status" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
             <option value="">Todos</option>
-            {Object.entries(statusLabels).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
+            {reservationStatuses.map((value) => (
+              <option key={value} value={value}>{statusLabels[value]}</option>
             ))}
           </select>
         </div>

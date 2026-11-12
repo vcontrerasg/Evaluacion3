@@ -895,3 +895,72 @@ a {
     animation: none !important;
   }
 }
+
+.hp {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.badge-new {
+  background: #fdf0d1;
+  color: #6d4a00;
+}
+
+.badge-read {
+  background: #dcefe3;
+  color: #17432a;
+}
+
+.badge-archived {
+  background: #ebeef0;
+  color: #4a5f6d;
+}
+
+.message-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.message {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+}
+
+.message.unread {
+  border-left-color: var(--signal);
+}
+
+.message-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.message-head h3 {
+  margin: 0;
+}
+
+.message-meta {
+  margin: 0.2rem 0 0.8rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.message-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-bottom: 0.8rem;
+}
