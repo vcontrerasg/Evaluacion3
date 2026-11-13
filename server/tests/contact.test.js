@@ -68,7 +68,7 @@ describe('envío del formulario', () => {
     const res = await request(app).post('/api/contact').send(attack);
     expect(res.status).toBe(201);
     for (const m of mail.outbox) {
-      expect(html.toLowerCase()).not.toContain('<script');
+      expect(m.html.toLowerCase()).not.toContain('<script');
     }
     expect(mail.outbox[0].html).toMatch(/&lt;script&gt;|&lt;img/);
   });
