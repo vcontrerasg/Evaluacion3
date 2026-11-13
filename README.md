@@ -4,10 +4,12 @@ Plataforma web para un portal de servicios profesionales con reserva de horas en
 
 ## Integrantes
 
-| Nombre completo | Identificación / sección |
-|---|---|
-| (completar) | (completar) |
-| (completar) | (completar) |
+| Nombre completo |
+| Víctor Contreras |
+| Fabián Gacitúa |
+| Sebastián Carrillo |
+| José Oses |
+| Diego Cabezas |
 
 ## Descripción
 
@@ -18,7 +20,6 @@ Andes Consultores ofrece asesoría profesional a empresas y personas. La platafo
 **Roles**
 
 | Rol | Alcance |
-|---|---|
 | Visitante | Consulta información pública. |
 | Usuario registrado | Accede a su cuenta y administra sus propios datos. |
 | Administrador | Accede al panel administrativo y gestiona usuarios y módulos. |
@@ -26,7 +27,6 @@ Andes Consultores ofrece asesoría profesional a empresas y personas. La platafo
 ## Tecnologías
 
 | Capa | Tecnología |
-|---|---|
 | Frontend | React 18, Vite, React Router |
 | Backend | Node.js 22, Express 4 |
 | Base de datos | MongoDB (MongoDB Atlas) con Mongoose |
@@ -230,7 +230,7 @@ El asistente aparece como un botón flotante en todas las páginas. Responde en 
 
 1. **Saludos:** respuesta fija.
 2. **Preguntas frecuentes administrables:** el administrador crea preguntas con palabras clave y respuesta desde el panel (Chatbot). El texto del usuario se normaliza (sin tildes, mayúsculas ni signos) y se compara con las palabras clave mediante una raíz simple por prefijo, de modo que `reservar`, `reservo` y `reserva` coinciden. Las palabras con la misma raíz cuentan una sola vez. Gana la pregunta con mayor puntaje y, si ninguna alcanza el mínimo, se pasa al siguiente nivel.
-3. **IA opcional (Groq):** solo si no hubo coincidencia, hay clave configurada y no se superó el límite diario. El modelo recibe únicamente el contexto de la organización (horario, servicios y preguntas frecuentes) y la pregunta del usuario en un mensaje separado de las instrucciones. Antes de enviarla se ocultan correos, teléfonos y RUT. La respuesta se limita a 600 caracteres y se identifica en pantalla como generada con IA.
+3. **IA (Groq):** solo si no hubo coincidencia, hay clave configurada y no se superó el límite diario. El modelo recibe únicamente el contexto de la organización (horario, servicios y preguntas frecuentes) y la pregunta del usuario en un mensaje separado de las instrucciones. Antes de enviarla se ocultan correos, teléfonos y RUT. La respuesta se limita a 600 caracteres y se identifica en pantalla como generada con IA.
 4. **Sin respuesta:** si la IA no está activa o falla, el asistente lo indica, sugiere el formulario de contacto y ofrece preguntas frecuentes.
 
 Todas las conversaciones se registran (pregunta, respuesta y origen) y el administrador puede revisarlas en el panel para detectar preguntas sin respuesta. Se eliminan automáticamente a los 30 días.
