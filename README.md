@@ -360,3 +360,15 @@ El servicio se despliega en Railway desde la rama `main` del repositorio y se co
 5. Verificar `https://<dominio>/api/health`.
 
 En MongoDB Atlas debe existir un usuario de base de datos exclusivo para la aplicación, con el rol `readWrite` solo sobre la base `andes`, y el acceso de red debe permitir las conexiones desde Railway.
+
+### Respaldo y restauración de la base de datos
+
+En clústeres gratuitos (M0) de MongoDB Atlas las instantáneas automáticas administradas no están habilitadas, por lo que el respaldo lógico se realiza con las herramientas oficiales `mongodump` y `mongorestore` (MongoDB Database Tools).
+
+Para evitar exponer credenciales en la terminal o en el historial de comandos, la cadena de conexión se carga previamente en una variable de entorno:
+
+**En PowerShell (Windows):**
+
+```powershell
+$env:MONGODB_URI = "mongodb+srv://<usuario>:<clave>@<cluster>.mongodb.net/andes"
+mongodump --uri="$env:MONGODB_URI" --out=respaldo-andes
